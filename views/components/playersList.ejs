@@ -4,10 +4,16 @@
 
   <div class="col-4">
     <div class="card p-1">
-      <h5 class="card-title"><%= player.first_name %></h5>
+      <h5 class="card-title">
+        <%= player.first_name + ' ' + player.last_name %>
+      </h5>
       <div class="card-text">
-        <div><%= player.last_name %></div>
-        <div><%= player.gender %> Citations</div>
+        <div><%= 'age:' + player.age %></div>
+        <div><%= 'gender:' + player.gender %></div>
+        <div><%= 'height:' + player.height %></div>
+        <div><%= 'weight:' + player.weight %></div>
+        <div><%= 'CA:' + player.CA %></div>
+        <div><%= 'PA:' + player.PA %></div>
 
         <div>
           <a
