@@ -1,38 +1,8 @@
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 
-async function getReferences(query, page, pageSize) {
-  console.log('getReferences', query);
-
-  const db = await open({
-    filename: './db/database.db',
-    driver: sqlite3.Database,
-  });
-
-  const stmt = await db.prepare(`
-    SELECT * FROM Reference
-    WHERE title LIKE @query
-    ORDER BY created_on DESC
-    LIMIT @pageSize
-    OFFSET @offset;
-    `);
-
-  const params = {
-    '@query': query + '%',
-    '@pageSize': pageSize,
-    '@offset': (page - 1) * pageSize,
-  };
-
-  try {
-    return await stmt.all(params);
-  } finally {
-    await stmt.finalize();
-    db.close();
-  }
-}
-
 async function getPlayers(query, page, pageSize) {
-  console.log('getPlayers', query);
+  console.log('myDB: getPlayers', query);
 
   const db = await open({
     filename: './db/football.db',
@@ -62,7 +32,7 @@ async function getPlayers(query, page, pageSize) {
 }
 
 async function getPlayerCount(query) {
-  console.log('getPlayersCount', query);
+  console.log('myDB: getPlayersCount', query);
 
   const db = await open({
     filename: './db/football.db',
@@ -87,26 +57,25 @@ async function getPlayerCount(query) {
   }
 }
 
-async function getReferencesCount(query) {
-  console.log('getReferences', query);
+async function getPlayerByID(player_id) {
+  console.log('getPlayerByID', player_id);
 
   const db = await open({
-    filename: './db/database.db',
+    filename: './db/football.db',
     driver: sqlite3.Database,
   });
 
   const stmt = await db.prepare(`
-    SELECT COUNT(*) AS count
-    FROM Reference
-    WHERE title LIKE @query;
+    SELECT * FROM player
+    WHERE player_id = @player_id;
     `);
 
   const params = {
-    '@query': query + '%',
+    '@player_id': player_id,
   };
 
   try {
-    return (await stmt.get(params)).count;
+    return await stmt.get(params);
   } finally {
     await stmt.finalize();
     db.close();
@@ -128,6 +97,56 @@ async function getReferenceByID(reference_id) {
 
   const params = {
     '@reference_id': reference_id,
+  };
+
+  try {
+    return await stmt.get(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+async function getPositionsByPlayerID(player_id) {
+  console.log('getPositionsByPlayerID', player_id);
+
+  const db = await open({
+    filename: './db/football.db',
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT * FROM position
+    WHERE player_id = @player_id;
+    `);
+
+  const params = {
+    '@player_id': player_id,
+  };
+
+  try {
+    return await stmt.get(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+async function getCountriesByPlayerID(player_id) {
+  console.log('getCountriesByPlayerID', player_id);
+
+  const db = await open({
+    filename: './db/football.db',
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT * FROM country
+    WHERE player_id = @player_id;
+    `);
+
+  const params = {
+    '@player_id': player_id,
   };
 
   try {
@@ -269,13 +288,13 @@ async function addAuthorIDToReferenceID(reference_id, author_id) {
   }
 }
 
-module.exports.getReferences = getReferences;
-module.exports.getReferencesCount = getReferencesCount;
 module.exports.insertReference = insertReference;
-module.exports.getReferenceByID = getReferenceByID;
+module.exports.getPlayerByID = getPlayerByID;
 module.exports.updateReferenceByID = updateReferenceByID;
 module.exports.deleteReferenceByID = deleteReferenceByID;
 module.exports.getAuthorsByReferenceID = getAuthorsByReferenceID;
 module.exports.addAuthorIDToReferenceID = addAuthorIDToReferenceID;
 module.exports.getPlayers = getPlayers;
 module.exports.getPlayerCount = getPlayerCount;
+module.exports.getPositionsByPlayerID = getPositionsByPlayerID;
+module.exports.getCountriesByPlayerID = getCountriesByPlayerID;

@@ -8,27 +8,6 @@ router.get('/', async function (req, res, next) {
   res.redirect('/players');
 });
 
-// http://localhost:3000/references?pageSize=24&page=3&q=John
-router.get('/references', async (req, res, next) => {
-  const query = req.query.q || '';
-  const page = +req.query.page || 1;
-  const pageSize = +req.query.pageSize || 24;
-  const msg = req.query.msg || null;
-  try {
-    let total = await myDb.getReferencesCount(query);
-    let references = await myDb.getReferences(query, page, pageSize);
-    res.render('./pages/index', {
-      references,
-      query,
-      msg,
-      currentPage: page,
-      lastPage: Math.ceil(total / pageSize),
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
 router.get('/players', async (req, res, next) => {
   const query = req.query.q || '';
   const page = +req.query.page || 1;
@@ -43,6 +22,34 @@ router.get('/players', async (req, res, next) => {
       msg,
       currentPage: page,
       lastPage: Math.ceil(total / pageSize),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/players/:player_id/edit', async (req, res, next) => {
+  const player_id = req.params.player_id;
+
+  const msg = req.query.msg || null;
+  try {
+    let player = await myDb.getPlayerByID(player_id);
+    console.log('player is:' + player);
+    let positions = await myDb.getPositionsByPlayerID(player_id);
+    let countries = await myDb.getCountriesByPlayerID(player_id);
+
+    console.log('edit reference', {
+      player,
+      positions,
+      countries,
+      msg,
+    });
+
+    res.render('./pages/editPlayer', {
+      player,
+      positions,
+      countries,
+      msg,
     });
   } catch (err) {
     next(err);
