@@ -1,11 +1,11 @@
-const sqlite3 = require("sqlite3");
-const { open } = require("sqlite");
+const sqlite3 = require('sqlite3');
+const { open } = require('sqlite');
 
 async function getReferences(query, page, pageSize) {
-  console.log("getReferences", query);
+  console.log('getReferences', query);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -18,9 +18,9 @@ async function getReferences(query, page, pageSize) {
     `);
 
   const params = {
-    "@query": query + "%",
-    "@pageSize": pageSize,
-    "@offset": (page - 1) * pageSize,
+    '@query': query + '%',
+    '@pageSize': pageSize,
+    '@offset': (page - 1) * pageSize,
   };
 
   try {
@@ -31,11 +31,67 @@ async function getReferences(query, page, pageSize) {
   }
 }
 
-async function getReferencesCount(query) {
-  console.log("getReferences", query);
+async function getPlayers(query, page, pageSize) {
+  console.log('getPlayers', query);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/football.db',
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT * FROM player
+    WHERE first_name LIKE @query
+    ORDER BY player_id
+    LIMIT @pageSize
+    OFFSET @offset;
+    `);
+
+  const params = {
+    '@query': query + '%',
+    '@pageSize': pageSize,
+    '@offset': (page - 1) * pageSize,
+  };
+
+  try {
+    return await stmt.all(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+async function getPlayerCount(query) {
+  console.log('getPlayersCount', query);
+
+  const db = await open({
+    filename: './db/football.db',
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM player
+    WHERE first_name LIKE @query;
+    `);
+
+  const params = {
+    '@query': query + '%',
+  };
+
+  try {
+    return (await stmt.get(params)).count;
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+async function getReferencesCount(query) {
+  console.log('getReferences', query);
+
+  const db = await open({
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -46,7 +102,7 @@ async function getReferencesCount(query) {
     `);
 
   const params = {
-    "@query": query + "%",
+    '@query': query + '%',
   };
 
   try {
@@ -58,10 +114,10 @@ async function getReferencesCount(query) {
 }
 
 async function getReferenceByID(reference_id) {
-  console.log("getReferenceByID", reference_id);
+  console.log('getReferenceByID', reference_id);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -71,7 +127,7 @@ async function getReferenceByID(reference_id) {
     `);
 
   const params = {
-    "@reference_id": reference_id,
+    '@reference_id': reference_id,
   };
 
   try {
@@ -83,10 +139,10 @@ async function getReferenceByID(reference_id) {
 }
 
 async function updateReferenceByID(reference_id, ref) {
-  console.log("updateReferenceByID", reference_id, ref);
+  console.log('updateReferenceByID', reference_id, ref);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -100,9 +156,9 @@ async function updateReferenceByID(reference_id, ref) {
     `);
 
   const params = {
-    "@reference_id": reference_id,
-    "@title": ref.title,
-    "@published_on": ref.published_on,
+    '@reference_id': reference_id,
+    '@title': ref.title,
+    '@published_on': ref.published_on,
   };
 
   try {
@@ -114,10 +170,10 @@ async function updateReferenceByID(reference_id, ref) {
 }
 
 async function deleteReferenceByID(reference_id) {
-  console.log("deleteReferenceByID", reference_id);
+  console.log('deleteReferenceByID', reference_id);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -128,7 +184,7 @@ async function deleteReferenceByID(reference_id) {
     `);
 
   const params = {
-    "@reference_id": reference_id,
+    '@reference_id': reference_id,
   };
 
   try {
@@ -141,7 +197,7 @@ async function deleteReferenceByID(reference_id) {
 
 async function insertReference(ref) {
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -151,8 +207,8 @@ async function insertReference(ref) {
 
   try {
     return await stmt.run({
-      "@title": ref.title,
-      "@published_on": ref.published_on,
+      '@title': ref.title,
+      '@published_on': ref.published_on,
     });
   } finally {
     await stmt.finalize();
@@ -160,12 +216,11 @@ async function insertReference(ref) {
   }
 }
 
-
 async function getAuthorsByReferenceID(reference_id) {
-  console.log("getAuthorsByReferenceID", reference_id);
+  console.log('getAuthorsByReferenceID', reference_id);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -176,7 +231,7 @@ async function getAuthorsByReferenceID(reference_id) {
     `);
 
   const params = {
-    "@reference_id": reference_id,
+    '@reference_id': reference_id,
   };
 
   try {
@@ -187,12 +242,11 @@ async function getAuthorsByReferenceID(reference_id) {
   }
 }
 
-
 async function addAuthorIDToReferenceID(reference_id, author_id) {
-  console.log("addAuthorIDToReferenceID", reference_id, author_id);
+  console.log('addAuthorIDToReferenceID', reference_id, author_id);
 
   const db = await open({
-    filename: "./db/database.db",
+    filename: './db/database.db',
     driver: sqlite3.Database,
   });
 
@@ -203,8 +257,8 @@ async function addAuthorIDToReferenceID(reference_id, author_id) {
     `);
 
   const params = {
-    "@reference_id": reference_id,
-    "@author_id": author_id,
+    '@reference_id': reference_id,
+    '@author_id': author_id,
   };
 
   try {
@@ -215,8 +269,6 @@ async function addAuthorIDToReferenceID(reference_id, author_id) {
   }
 }
 
-
-
 module.exports.getReferences = getReferences;
 module.exports.getReferencesCount = getReferencesCount;
 module.exports.insertReference = insertReference;
@@ -225,3 +277,5 @@ module.exports.updateReferenceByID = updateReferenceByID;
 module.exports.deleteReferenceByID = deleteReferenceByID;
 module.exports.getAuthorsByReferenceID = getAuthorsByReferenceID;
 module.exports.addAuthorIDToReferenceID = addAuthorIDToReferenceID;
+module.exports.getPlayers = getPlayers;
+module.exports.getPlayerCount = getPlayerCount;

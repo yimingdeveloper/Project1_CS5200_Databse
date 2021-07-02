@@ -1,0 +1,29 @@
+<h2>References</h2>
+<div class="row g-3">
+  <% for (let player of players) { %>
+
+  <div class="col-4">
+    <div class="card p-1">
+      <h5 class="card-title"><%= player.first_name %></h5>
+      <div class="card-text">
+        <div><%= player.last_name %></div>
+        <div><%= player.gender %> Citations</div>
+
+        <div>
+          <a
+            class="btn btn-outline-primary"
+            href="<%= '/players/' + player.player_id + '/edit' %>"
+            >Edit</a
+          >
+          <a
+            class="btn btn-outline-danger"
+            href="<%= '/players/' + player.player_id + '/delete' %>"
+            >Delete</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% } %> <%- include("./pagination.ejs", { currentPage, lastPage }) %>
+</div>
