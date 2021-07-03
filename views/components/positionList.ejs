@@ -2,10 +2,11 @@
 <ul>
   <% for (let p of positions) { %>
   <li>
-    <a href="<%= '/positions/' + p.position_id + '/edit'  %>"
-      ><%= p.position_name %></a
+    <a href="<%= '/players/' %>"><%= p.position_name %></a>
+    <a
+      href="<%= '/players/' + player.player_id + '/removePosition/' + p.position_id %>"
+      >❌</a
     >
-    <a href="<%= '/positions/' + p.position_id + '/removePosition'   %>">❌</a>
   </li>
   <% } %>
 </ul>

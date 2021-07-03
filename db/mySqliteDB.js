@@ -143,37 +143,6 @@ async function updatePlayerByID(player_id, player) {
   }
 }
 
-async function updateReferenceByID(reference_id, ref) {
-  console.log('updateReferenceByID', reference_id, ref);
-
-  const db = await open({
-    filename: './db/database.db',
-    driver: sqlite3.Database,
-  });
-
-  const stmt = await db.prepare(`
-    UPDATE Reference
-    SET
-      title = @title,
-      published_on = @published_on
-    WHERE
-       reference_id = @reference_id;
-    `);
-
-  const params = {
-    '@reference_id': reference_id,
-    '@title': ref.title,
-    '@published_on': ref.published_on,
-  };
-
-  try {
-    return await stmt.run(params);
-  } finally {
-    await stmt.finalize();
-    db.close();
-  }
-}
-
 async function deleteReferenceByID(reference_id) {
   console.log('deleteReferenceByID', reference_id);
 
@@ -247,23 +216,23 @@ async function getAuthorsByReferenceID(reference_id) {
   }
 }
 
-async function addAuthorIDToReferenceID(reference_id, author_id) {
-  console.log('addAuthorIDToReferenceID', reference_id, author_id);
+async function addPositionIDToPlayerID(player_id, position_id) {
+  console.log('addPositionIDToPlayerID', player_id, position_id);
 
   const db = await open({
-    filename: './db/database.db',
+    filename: './db/football.db',
     driver: sqlite3.Database,
   });
 
   const stmt = await db.prepare(`
     INSERT INTO
-    Reference_Author(reference_id, author_id)
-    VALUES (@reference_id, @author_id);
+    PlayerAndPosition(player_id, position_id)
+    VALUES (@player_id, @position_id);
     `);
 
   const params = {
-    '@reference_id': reference_id,
-    '@author_id': author_id,
+    '@player_id': player_id,
+    '@position_id': position_id,
   };
 
   try {
@@ -276,10 +245,9 @@ async function addAuthorIDToReferenceID(reference_id, author_id) {
 
 module.exports.insertReference = insertReference;
 module.exports.getPlayerByID = getPlayerByID;
-module.exports.updateReferenceByID = updateReferenceByID;
 module.exports.deleteReferenceByID = deleteReferenceByID;
 module.exports.getAuthorsByReferenceID = getAuthorsByReferenceID;
-module.exports.addAuthorIDToReferenceID = addAuthorIDToReferenceID;
+module.exports.addPositionIDToPlayerID = addPositionIDToPlayerID;
 module.exports.getPlayers = getPlayers;
 module.exports.getPlayerCount = getPlayerCount;
 module.exports.getPositionsByPlayerID = getPositionsByPlayerID;

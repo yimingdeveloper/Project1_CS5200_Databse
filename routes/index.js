@@ -70,64 +70,22 @@ router.post('/players/:player_id/edit', async (req, res, next) => {
   }
 });
 
-router.get('/references/:reference_id/edit', async (req, res, next) => {
-  const reference_id = req.params.reference_id;
-
-  const msg = req.query.msg || null;
-  try {
-    let ref = await myDb.getReferenceByID(reference_id);
-    let authors = await myDb.getAuthorsByReferenceID(reference_id);
-
-    console.log('edit reference', {
-      ref,
-      authors,
-      msg,
-    });
-
-    res.render('./pages/editReference', {
-      ref,
-      authors,
-      msg,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.post('/references/:reference_id/edit', async (req, res, next) => {
-  const reference_id = req.params.reference_id;
-  const ref = req.body;
+router.post('/players/:player_id/addPosition', async (req, res, next) => {
+  console.log('Add position', req.body);
+  const player_id = req.params.player_id;
+  const position_id = req.body.position_id;
 
   try {
-    let updateResult = await myDb.updateReferenceByID(reference_id, ref);
-    console.log('update', updateResult);
-
-    if (updateResult && updateResult.changes === 1) {
-      res.redirect('/references/?msg=Updated');
-    } else {
-      res.redirect('/references/?msg=Error Updating');
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.post('/references/:reference_id/addAuthor', async (req, res, next) => {
-  console.log('Add author', req.body);
-  const reference_id = req.params.reference_id;
-  const author_id = req.body.author_id;
-
-  try {
-    let updateResult = await myDb.addAuthorIDToReferenceID(
-      reference_id,
-      author_id
+    let updateResult = await myDb.addPositionIDToPlayerID(
+      player_id,
+      position_id
     );
-    console.log('addAuthorIDToReferenceID', updateResult);
+    console.log('addPositionIDToPlayerID', updateResult);
 
     if (updateResult && updateResult.changes === 1) {
-      res.redirect(`/references/${reference_id}/edit?msg=Author added`);
+      res.redirect(`/players/${player_id}/edit?msg=Author added`);
     } else {
-      res.redirect(`/references/${reference_id}/edit?msg=Error adding author`);
+      res.redirect(`/players/${player_id}/edit?msg=Error adding author`);
     }
   } catch (err) {
     next(err);
