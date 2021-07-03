@@ -134,14 +134,14 @@ router.get('/players/:player_id/delete', async (req, res, next) => {
   }
 });
 
-router.post('/createReference', async (req, res, next) => {
-  const ref = req.body;
+router.post('/createPlayer', async (req, res, next) => {
+  const player = req.body;
 
   try {
-    const insertRes = await myDb.insertReference(ref);
+    const insertRes = await myDb.insertPlayer(player);
 
     console.log('Inserted', insertRes);
-    res.redirect('/references/?msg=Inserted');
+    res.redirect('/players/?msg=Inserted');
   } catch (err) {
     console.log('Error inserting', err);
     next(err);
