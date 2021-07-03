@@ -11,7 +11,7 @@ async function getPlayers(query, page, pageSize) {
 
   const stmt = await db.prepare(`
     SELECT * FROM player
-    WHERE first_name LIKE @query
+    WHERE first_name LIKE @query or last_name LIKE @query
     ORDER BY player_id
     LIMIT @pageSize
     OFFSET @offset;
@@ -42,7 +42,7 @@ async function getPlayerCount(query) {
   const stmt = await db.prepare(`
     SELECT COUNT(*) AS count
     FROM player
-    WHERE first_name LIKE @query;
+    WHERE first_name LIKE @query or last_name LIKE @query;
     `);
 
   const params = {
