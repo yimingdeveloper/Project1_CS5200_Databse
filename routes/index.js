@@ -34,21 +34,17 @@ router.get('/players/:player_id/edit', async (req, res, next) => {
   const msg = req.query.msg || null;
   try {
     let player = await myDb.getPlayerByID(player_id);
-    console.log('player is:' + player);
     let positions = await myDb.getPositionsByPlayerID(player_id);
-    let countries = await myDb.getCountriesByPlayerID(player_id);
 
-    console.log('edit reference', {
+    console.log('edit player', {
       player,
       positions,
-      countries,
       msg,
     });
 
     res.render('./pages/editPlayer', {
       player,
       positions,
-      countries,
       msg,
     });
   } catch (err) {

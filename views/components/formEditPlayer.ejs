@@ -1,42 +1,38 @@
 <h2>Reference</h2>
 
-<form
-  action=" <%= '/references/' + ref.reference_id + '/edit' %>"
-  method="POST"
->
-
+<form action=" <%= '/players/' + player.player_id + '/update' %>" method="POST">
   <div>
     <label class="form-label">
-      Reference ID:
+      Player ID:
       <input
         class="form-control"
         type="text"
-        name="reference_id"
-        value="<%= ref.reference_id %>"
+        name="player_id"
+        value="<%= player.player_id %>"
         disabled
       />
     </label>
   </div>
   <div>
     <label class="form-label">
-      Title:
+      CA:
       <input
         class="form-control"
         type="text"
-        name="title"
-        value="<%= ref.title %>"
+        name="CA"
+        value="<%= player.CA %>"
       />
     </label>
   </div>
 
   <div>
     <label class="form-label">
-      Published On:
+      PA:
       <input
         class="form-control"
         type="text"
-        name="published_on"
-        value="<%= ref.published_on %>"
+        name="PA"
+        value="<%= player.PA %>"
       />
     </label>
   </div>
@@ -44,7 +40,7 @@
   <button type="submit" class="btn btn-primary">Edit</button>
   <a
     class="btn btn-danger"
-    href="<%= '/references/' + ref.reference_id + '/delete' %>"
+    href="<%= '/players/' + player.player_id + '/delete' %>"
     >Delete</a
   >
 </form>

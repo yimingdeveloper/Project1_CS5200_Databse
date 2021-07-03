@@ -58,7 +58,7 @@ async function getPlayerCount(query) {
 }
 
 async function getPlayerByID(player_id) {
-  console.log('getPlayerByID', player_id);
+  console.log('myDB:getPlayerByID', player_id);
 
   const db = await open({
     filename: './db/football.db',
@@ -82,33 +82,8 @@ async function getPlayerByID(player_id) {
   }
 }
 
-async function getReferenceByID(reference_id) {
-  console.log('getReferenceByID', reference_id);
-
-  const db = await open({
-    filename: './db/database.db',
-    driver: sqlite3.Database,
-  });
-
-  const stmt = await db.prepare(`
-    SELECT * FROM Reference
-    WHERE reference_id = @reference_id;
-    `);
-
-  const params = {
-    '@reference_id': reference_id,
-  };
-
-  try {
-    return await stmt.get(params);
-  } finally {
-    await stmt.finalize();
-    db.close();
-  }
-}
-
 async function getPositionsByPlayerID(player_id) {
-  console.log('getPositionsByPlayerID', player_id);
+  console.log('myDB: getPositionsByPlayerID', player_id);
 
   const db = await open({
     filename: './db/football.db',
@@ -116,16 +91,21 @@ async function getPositionsByPlayerID(player_id) {
   });
 
   const stmt = await db.prepare(`
-    SELECT * FROM position
-    WHERE player_id = @player_id;
-    `);
+  SELECT position.name as position_name, position.position_id
+  from player
+  inner JOIN PlayerAndPosition
+  on player.player_id=PlayerAndPosition.player_id
+  INNER JOIN position
+  on position.position_id=PlayerAndPosition.position_id
+  WHERE player.player_id = @player_id;
+  `);
 
   const params = {
     '@player_id': player_id,
   };
 
   try {
-    return await stmt.get(params);
+    return await stmt.all(params);
   } finally {
     await stmt.finalize();
     db.close();
