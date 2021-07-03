@@ -143,22 +143,22 @@ async function updatePlayerByID(player_id, player) {
   }
 }
 
-async function deleteReferenceByID(reference_id) {
-  console.log('deleteReferenceByID', reference_id);
+async function deletePlayerByID(player_id) {
+  console.log('deletePlayerByID', player_id);
 
   const db = await open({
-    filename: './db/database.db',
+    filename: './db/football.db',
     driver: sqlite3.Database,
   });
 
   const stmt = await db.prepare(`
-    DELETE FROM Reference
+    DELETE FROM player
     WHERE
-       reference_id = @reference_id;
+       player_id = @player_id;
     `);
 
   const params = {
-    '@reference_id': reference_id,
+    '@player_id': player_id,
   };
 
   try {
@@ -243,12 +243,38 @@ async function addPositionIDToPlayerID(player_id, position_id) {
   }
 }
 
+async function removePositionIDFromPlayerID(player_id, position_id) {
+  console.log('removePositionIDFromPlayerID', player_id, position_id);
+
+  const db = await open({
+    filename: './db/football.db',
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    DELETE FROM PlayerAndPosition
+    WHERE player_id=@player_id and position_id=@position_id;
+    `);
+
+  const params = {
+    '@player_id': player_id,
+    '@position_id': position_id,
+  };
+
+  try {
+    return await stmt.run(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
 module.exports.insertReference = insertReference;
 module.exports.getPlayerByID = getPlayerByID;
-module.exports.deleteReferenceByID = deleteReferenceByID;
-module.exports.getAuthorsByReferenceID = getAuthorsByReferenceID;
+module.exports.deletePlayerByID = deletePlayerByID;
 module.exports.addPositionIDToPlayerID = addPositionIDToPlayerID;
 module.exports.getPlayers = getPlayers;
 module.exports.getPlayerCount = getPlayerCount;
 module.exports.getPositionsByPlayerID = getPositionsByPlayerID;
 module.exports.updatePlayerByID = updatePlayerByID;
+module.exports.removePositionIDFromPlayerID = removePositionIDFromPlayerID;

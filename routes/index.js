@@ -83,26 +83,51 @@ router.post('/players/:player_id/addPosition', async (req, res, next) => {
     console.log('addPositionIDToPlayerID', updateResult);
 
     if (updateResult && updateResult.changes === 1) {
-      res.redirect(`/players/${player_id}/edit?msg=Author added`);
+      res.redirect(`/players/${player_id}/edit?msg=Position added`);
     } else {
-      res.redirect(`/players/${player_id}/edit?msg=Error adding author`);
+      res.redirect(`/players/${player_id}/edit?msg=Error Adding Position`);
     }
   } catch (err) {
     next(err);
   }
 });
 
-router.get('/references/:reference_id/delete', async (req, res, next) => {
-  const reference_id = req.params.reference_id;
+router.get(
+  '/players/:player_id/removePosition/:position_id',
+  async (req, res, next) => {
+    console.log('Remove position', req.body);
+    const player_id = req.params.player_id;
+    const position_id = req.params.position_id;
+
+    try {
+      let updateResult = await myDb.removePositionIDFromPlayerID(
+        player_id,
+        position_id
+      );
+      console.log('removePositionIDFromPlayerID', updateResult);
+
+      if (updateResult && updateResult.changes === 1) {
+        res.redirect(`/players/${player_id}/edit?msg=Position Removed`);
+      } else {
+        res.redirect(`/players/${player_id}/edit?msg=Error Removing Position`);
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.get('/players/:player_id/delete', async (req, res, next) => {
+  const player_id = req.params.player_id;
 
   try {
-    let deleteResult = await myDb.deleteReferenceByID(reference_id);
+    let deleteResult = await myDb.deletePlayerByID(player_id);
     console.log('delete', deleteResult);
 
     if (deleteResult && deleteResult.changes === 1) {
-      res.redirect('/references/?msg=Deleted');
+      res.redirect('/players/?msg=Deleted');
     } else {
-      res.redirect('/references/?msg=Error Deleting');
+      res.redirect('/players/?msg=Error Deleting');
     }
   } catch (err) {
     next(err);
