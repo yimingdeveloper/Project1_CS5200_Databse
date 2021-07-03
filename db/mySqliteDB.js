@@ -112,8 +112,8 @@ async function getPositionsByPlayerID(player_id) {
   }
 }
 
-async function getCountriesByPlayerID(player_id) {
-  console.log('getCountriesByPlayerID', player_id);
+async function updatePlayerByID(player_id, player) {
+  console.log('updatePlayerByID', player_id, player);
 
   const db = await open({
     filename: './db/football.db',
@@ -121,16 +121,22 @@ async function getCountriesByPlayerID(player_id) {
   });
 
   const stmt = await db.prepare(`
-    SELECT * FROM country
-    WHERE player_id = @player_id;
+    UPDATE player
+    SET
+      CA = @CA,
+      PA = @PA
+    WHERE
+       player_id = @player_id;
     `);
 
   const params = {
     '@player_id': player_id,
+    '@CA': player.CA,
+    '@PA': player.PA,
   };
 
   try {
-    return await stmt.get(params);
+    return await stmt.run(params);
   } finally {
     await stmt.finalize();
     db.close();
@@ -277,4 +283,4 @@ module.exports.addAuthorIDToReferenceID = addAuthorIDToReferenceID;
 module.exports.getPlayers = getPlayers;
 module.exports.getPlayerCount = getPlayerCount;
 module.exports.getPositionsByPlayerID = getPositionsByPlayerID;
-module.exports.getCountriesByPlayerID = getCountriesByPlayerID;
+module.exports.updatePlayerByID = updatePlayerByID;

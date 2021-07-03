@@ -52,6 +52,24 @@ router.get('/players/:player_id/edit', async (req, res, next) => {
   }
 });
 
+router.post('/players/:player_id/edit', async (req, res, next) => {
+  const player_id = req.params.player_id;
+  const player = req.body;
+
+  try {
+    let updateResult = await myDb.updatePlayerByID(player_id, player);
+    console.log('update', updateResult);
+
+    if (updateResult && updateResult.changes === 1) {
+      res.redirect('/players/?msg=Updated');
+    } else {
+      res.redirect('/players/?msg=Error Updating');
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get('/references/:reference_id/edit', async (req, res, next) => {
   const reference_id = req.params.reference_id;
 
